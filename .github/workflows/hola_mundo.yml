@@ -1,17 +1,35 @@
-name: Hola Mundo
+name: Hola Mundo + SonarCloud
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  hola_mundo_job:
+  build-and-scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          # Sonar recomienda desactivar shallow clone para tener mejor contexto
+          fetch-depth: 0
 
-      - name: Imprimir Hola Mundo
-        run: echo "Hola Mundo desde GitHub Actions!"
+      - name: Hola Mundo
+        run: echo "Hola Mundo desde GitHub Actions con SonarCloud!"
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        # Si quieres pasar parámetros extra (opcional),
+        # puedes usar args, pero para el hola mundo basta
+        # con sonar-project.properties
+        # with:
+        #   args: >
+        #     "-Dsonar.organization=TU_ORGANIZATION_KEY"
+        #     "-Dsonar.projectKey=TU_PROJECT_KEY"
+        #     "-Dsonar.sources=."
